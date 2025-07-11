@@ -75,19 +75,28 @@ jobs:
         if: matrix.settings.target == 'i686-pc-windows-msvc'
         run: yarn config set supportedArchitectures.cpu "ia32"
         shell: bash
-      - name: Install OpenCV (macOS)
-        if: startsWith(matrix.settings.host, 'macos')
+      # === macOS 安装 OpenCV + LLVM ===
+      - name: Install OpenCV and LLVM (macOS)
+        if: matrix.settings.host == 'macos-latest'
         run: |
-          brew install opencv
-          echo "PKG_CONFIG_PATH=$(brew --prefix)/lib/pkgconfig" >> $GITHUB_ENV
-      - name: Install OpenCV with vcpkg (Windows)
-        if: startsWith(matrix.settings.host, 'windows')
+          brew update
+          brew install opencv llvm
+          echo "PKG_CONFIG_PATH=$(brew --prefix opencv)/lib/pkgconfig" >> $GITHUB_ENV
+          echo "LIBCLANG_PATH=$(brew --prefix llvm)/lib" >> $GITHUB_ENV
+          echo "PATH=$(brew --prefix llvm)/bin:$PATH" >> $GITHUB_ENV
+          echo "CXX=clang++" >> $GITHUB_ENV
+      # === Windows 安装 OpenCV + LLVM ===
+      - name: Install OpenCV and LLVM (Windows)
+        if: matrix.settings.host == 'windows-latest'
         run: |
-          git clone https://github.com/microsoft/vcpkg.git
-          .\vcpkg\bootstrap-vcpkg.bat
-          .\vcpkg\vcpkg install opencv
-          echo "VCPKG_ROOT=${{ github.workspace }}\vcpkg" >> $GITHUB_ENV
-          echo "VCPKG_DEFAULT_TRIPLET=x64-windows" >> $GITHUB_ENV
+          choco install -y llvm opencv
+          echo "LIBCLANG_PATH=C:/Program Files/LLVM/bin" >> $GITHUB_ENV
+          echo "PATH=C:/tools/opencv/build/x64/vc16/bin;$PATH" >> $GITHUB_ENV
+          echo "OPENCV_INCLUDE_PATHS=C:/tools/opencv/build/include" >> $GITHUB_ENV
+          echo "OPENCV_LINK_PATHS=C:/tools/opencv/build/x64/vc16/lib" >> $GITHUB_ENV
+          echo "OPENCV_LINK_LIBS=opencv_world480" >> $GITHUB_ENV
+          echo "CXX=clang++" >> $GITHUB_ENV
+        shell: powershell
       - name: Install dependencies
         run: yarn install
       - name: Setup node x86
