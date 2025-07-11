@@ -86,22 +86,10 @@ jobs:
           echo "PATH=$(brew --prefix llvm)/bin:$PATH" >> $GITHUB_ENV
           echo "CXX=clang++" >> $GITHUB_ENV
       # === Windows 安装 OpenCV + LLVM ===
-      - name: Install OpenCV and LLVM (Windows)
-        if: matrix.settings.host == 'windows-latest'
+      - name: Install OpenCV
         run: |
-          choco install -y llvm
-          choco install -y opencv --version=4.8.0
-          echo "LIBCLANG_PATH=C:/Program Files/LLVM/bin" >> $GITHUB_ENV
-          echo "CXX=clang++" >> $GITHUB_ENV
-
-          echo "OPENCV_VERSION=4.8.0" >> $GITHUB_ENV
-          echo "OPENCV_DIR=C:/tools/opencv/build" >> GITHUB_ENV
-          echo "CMAKE_PREFIX_PATH=C:/tools/opencv/build" >> $GITHUB_ENV
-          echo "PATH=C:/tools/opencv/build/x64/vc16/bin;$PATH" >> $GITHUB_ENV
-          echo "OPENCV_INCLUDE_PATHS=C:/tools/opencv/build/include" >> $GITHUB_ENV
-          echo "OPENCV_LINK_PATHS=C:/tools/opencv/build/x64/vc16/lib" >> $GITHUB_ENV
-          echo "OPENCV_LINK_LIBS=opencv_world480" >> $GITHUB_ENV
-        shell: powershell
+          vcpkg install opencv4:x64-windows
+          echo "VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT" >> $GITHUB_ENV
       - name: Install dependencies
         run: yarn install
       - name: Setup node x86
