@@ -87,6 +87,7 @@ jobs:
           echo "CXX=clang++" >> $GITHUB_ENV
       # === Windows 安装 OpenCV + LLVM ===
       - name: Install OpenCV
+        if: matrix.settings.host == 'windows-latest'
         run: |
           vcpkg install opencv4:x64-windows
           echo "VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT" >> $GITHUB_ENV
