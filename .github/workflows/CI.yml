@@ -75,6 +75,19 @@ jobs:
         if: matrix.settings.target == 'i686-pc-windows-msvc'
         run: yarn config set supportedArchitectures.cpu "ia32"
         shell: bash
+      - name: Install OpenCV (macOS)
+        if: startsWith(matrix.settings.host, 'macos')
+        run: |
+          brew install opencv
+          echo "PKG_CONFIG_PATH=$(brew --prefix)/lib/pkgconfig" >> $GITHUB_ENV
+      - name: Install OpenCV with vcpkg (Windows)
+        if: startsWith(matrix.settings.host, 'windows')
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git
+          .\vcpkg\bootstrap-vcpkg.bat
+          .\vcpkg\vcpkg install opencv
+          echo "VCPKG_ROOT=${{ github.workspace }}\vcpkg" >> $GITHUB_ENV
+          echo "VCPKG_DEFAULT_TRIPLET=x64-windows" >> $GITHUB_ENV
       - name: Install dependencies
         run: yarn install
       - name: Setup node x86
