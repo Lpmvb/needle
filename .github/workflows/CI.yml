@@ -85,6 +85,13 @@ jobs:
           echo "LIBCLANG_PATH=$(brew --prefix llvm)/lib" >> $GITHUB_ENV
           echo "PATH=$(brew --prefix llvm)/bin:$PATH" >> $GITHUB_ENV
           echo "CXX=clang++" >> $GITHUB_ENV
+      - name: Cache vcpkg with specific version
+        if: matrix.settings.host == 'windows-latest'
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${{ env.VCPKG_INSTALLATION_ROOT }}\installed
+          key: ${{ runner.os }}-vcpkg-opencv-4.8.0
       # === Windows 安装 OpenCV + LLVM ===
       - name: Install OpenCV
         if: matrix.settings.host == 'windows-latest'
