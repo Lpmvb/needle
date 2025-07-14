@@ -99,10 +99,11 @@ jobs:
       - name: Install OpenCV via vcpkg (ARM64)
         if: matrix.settings.target == 'aarch64-pc-windows-msvc'
         run: |
-          vcpkg install llvm opencv4[contrib,nonfree]
-          echo "VCPKG_DEFAULT_TRIPLET=arm64-windows" >> $GITHUB_ENV
-          echo "VCPKGRS_DYNAMIC=1" >> $GITHUB_ENV
-          echo "VCPKG_ROOT=$env:VCPKG_INSTALLATION_ROOT" >> $GITHUB_ENV
+          vcpkg install opencv4[contrib,nonfree]
+          echo "VCPKG_DEFAULT_TRIPLET=arm64-windows" >> $env:GITHUB_ENV
+          echo "VCPKGRS_DYNAMIC=1" >> $env:GITHUB_ENV
+          echo "VCPKG_ROOT=$env:VCPKG_INSTALLATION_ROOT" >> $env:GITHUB_ENV
+          echo "OpenCV_DIR=$env:VCPKG_INSTALLATION_ROOT\\installed\\arm64-windows\\share\\opencv4" >> $env:GITHUB_ENV
       - name: Install dependencies
         run: yarn install
       - name: Setup node x86
