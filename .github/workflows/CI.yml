@@ -103,7 +103,7 @@ jobs:
       - name: Install OpenCV via vcpkg (ARM64)
         if: matrix.settings.target == 'aarch64-pc-windows-msvc'
         run: |
-          vcpkg install opencv4[contrib,nonfree]
+          vcpkg install opencv4[contrib,nonfree] --triplet=arm64-windows
           echo "VCPKG_DEFAULT_TRIPLET=arm64-windows" >> $env:GITHUB_ENV
           echo "VCPKGRS_DYNAMIC=1" >> $env:GITHUB_ENV
           echo "VCPKG_ROOT=$env:VCPKG_INSTALLATION_ROOT" >> $env:GITHUB_ENV
