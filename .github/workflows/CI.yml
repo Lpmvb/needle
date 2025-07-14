@@ -89,7 +89,7 @@ jobs:
       - name: Install OpenCV via vcpkg (x64)
         if: matrix.settings.target == 'x86_64-pc-windows-msvc'
         run: |
-          vcpkg install llvm opencv4[contrib,nonfree]
+          vcpkg install opencv4[contrib,nonfree]
           echo "VCPKG_DEFAULT_TRIPLET=x64-windows" >> $GITHUB_ENV
           echo "VCPKGRS_DYNAMIC=1" >> $GITHUB_ENV
           echo "VCPKG_ROOT=$env:VCPKG_INSTALLATION_ROOT" >> $GITHUB_ENV
