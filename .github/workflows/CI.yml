@@ -3,6 +3,7 @@ env:
   DEBUG: napi:*
   APP_NAME: needle
   MACOSX_DEPLOYMENT_TARGET: '10.13'
+  VCPKG_ROOT: ${{ github.workspace }}/vcpkg
 permissions:
   contents: write
   id-token: write
@@ -75,17 +76,22 @@ jobs:
         if: matrix.settings.target == 'i686-pc-windows-msvc'
         run: yarn config set supportedArchitectures.cpu "ia32"
         shell: bash
-      # === macOS 安装 OpenCV + LLVM ===
       - name: Install OpenCV and LLVM (macOS)
         if: matrix.settings.host == 'macos-latest'
         run: |
           brew update
           brew install opencv llvm
           echo "PKG_CONFIG_PATH=$(brew --prefix opencv)/lib/pkgconfig" >> $GITHUB_ENV
-          echo "LIBCLANG_PATH=$(brew --prefix llvm)/lib" >> $GITHUB_ENV
-          echo "PATH=$(brew --prefix llvm)/bin:$PATH" >> $GITHUB_ENV
-          echo "CXX=clang++" >> $GITHUB_ENV
-      # 安装 OpenCV for x64
+      - name: Cache vcpkg
+        uses: actions/cache@v4
+        if: matrix.settings.host == 'windows-latest'
+        with:
+          path: |
+            ${{ env.VCPKG_ROOT }}/installed
+            ${{ env.VCPKG_ROOT }}/downloads
+          key: vcpkg-${{ matrix.settings.target }}-opencv4-contrib-nonfree
+          restore-keys: |
+            vcpkg-${{ matrix.settings.target }}-
       - name: Install OpenCV via vcpkg (x64)
         if: matrix.settings.target == 'x86_64-pc-windows-msvc'
         run: |
@@ -94,8 +100,6 @@ jobs:
           echo "VCPKGRS_DYNAMIC=1" >> $env:GITHUB_ENV
           echo "VCPKG_ROOT=$env:VCPKG_INSTALLATION_ROOT" >> $env:GITHUB_ENV
           echo "OpenCV_DIR=$env:VCPKG_INSTALLATION_ROOT\\installed\\x64-windows\\share\\opencv4" >> $env:GITHUB_ENV
-
-      # 安装 OpenCV for ARM64
       - name: Install OpenCV via vcpkg (ARM64)
         if: matrix.settings.target == 'aarch64-pc-windows-msvc'
         run: |
